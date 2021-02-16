@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Room</title>
+
+    <!-- Import the tailwind framework -->
+    <link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet">
+
+    <style>
+        #chat-section,
+        #form-msg {
+            margin-left: 12.5%;
+        }
+
+
+
+
+
+
+
+
+    </style>
+
+</head>
+
+<body class="h-full text-center bg-gray-300">
+
+<header class="h-1/4 py-5 mb-3">
+    <h1 class="text-5xl">Welcome to the public chat!</h1>
+    <h2 class="text-4xl">Enjoy !</h2>
+    <h3 class="text-2xl font-bold text-green-600">Connected as : {{ username }}</h3>
+</header>
+
+<main id="main-discussion" class="h-1/2 bg-gray-300 pt-16">
+
+    <div id="chat-section" class="w-3/4 h-3/4 overflow-y-scroll px-5">
+        <!-- Chat section -->
+        {% for message in messages %}
+        <div class=" bg-yellow-500 w-full p-3 my-2 shadow-xl">
+            <span class="float-left text-left text-xs font-bold text-white">{{ message.date }}</span><br>
+            <span class="font-bold float-left mr-2">{{ message.messenger }}: </span>
+            <p class="text-left">{{ message.content }}</p>
+        </div>
+
+        {% endfor %}
+
+    </div>
+
+    <div id="form-msg" class="w-3/4 px-5">
+        <!-- Add message section -->
+        <form action="" class="my-5 flex" onsubmit="return false;">
+            <input class="w-3/4 rounded-2xl p-2 outline-none" type="text" name="message" id="message"
+                   placeholder="Your Message">
+            <input class="p-2 ml-2 rounded-2xl font-bold outline-none" type="submit" value="Send"
+                   id="send-message-btn" onclick="add_message('{{ username }}')">
+        </form>
+
+    </div>
+
+</main>
+
+<footer class="h-1/4 pt-16">
+    <p>Copyright &copy; 2021. Open Sourced on Github.</p>
+</footer>
+
+<script>
+
+    scroll_bottom();
+
+    // Function to scroll to the bottom when sending or receiving new message
+    function scroll_bottom() {
+
+        var toscrolldown = document.getElementById('chat-section');
+        toscrolldown.scrollTop = toscrolldown.scrollHeight;
+
+    }
+
+    // Handle websocket stuff
+    const chatSocket = new WebSocket(
+            'ws://'
+            + window.location.host
+            + '/ws/chat/'
+            + 'public'
+            + '/'
+        );
+
+        chatSocket.onmessage = function(e) {
+            const data = JSON.parse(e.data);
+
+            if( !data.message=="" ){
+
+            const msg = `
+            <div class=" bg-yellow-500 w-full p-3 my-2 shadow-xl">
+            <span class="font-bold float-left mr-2">${ data.username }: </span>
+            <p class="text-left">${ data.message }</p>
+            </div>`;
+
+            document.querySelector('#chat-section').innerHTML += msg;
+
+            scroll_bottom();
+            }
+        };
+
+        chatSocket.onclose = function(e) {
+            console.error('Chat socket closed unexpectedly');
+        };
+
+        document.querySelector('#send-message-btn').onclick = function(e) {
+            const messageInputDom = document.querySelector('#message');
+            const message = messageInputDom.value;
+            chatSocket.send(JSON.stringify({
+                'message': message,
+                'username': '{{username}}'
+            }));
+            messageInputDom.value = '';
+        };
+
+
+
+
+
+</script>
+
+</body>
+
+</html>

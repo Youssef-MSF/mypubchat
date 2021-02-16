@@ -1,0 +1,53 @@
+<!-- chat/templates/chat/index.html -->
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Index</title>
+
+    <!-- Import the tailwind framework -->
+    <link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet">
+
+    <style>
+        @media(min-width: 400px) {
+
+            #login-form {
+            margin-left: 13%;
+            padding-top: 5%;
+            padding-bottom: 5%;
+            width: 75%;
+        }
+
+        }
+
+        #header-join {
+            padding-top: 5%;
+            padding-bottom: 5%;
+        }
+    </style>
+
+</head>
+
+<body class="text-center h-full bg-gray-300 px-2">
+
+    <header class="h-1/4" id="header-join">
+        <h1 class="text-5xl">Join the public chat now !</h1>
+    </header>
+
+    <section class="h-1/2">
+        <form id="login-form" action="{% url 'login' %}" method="post" class="bg-green-200 p-2 mt-10 shadow-2xl">
+            {% csrf_token %}
+            <input class="p-2 outline-none lg:w-3/4 w-full rounded-2xl" type="text" name="name" id="name" placeholder="Your username"><br>
+            <button class="bg-yellow-100 p-2 my-2 hover:bg-yellow-300 rounded-2xl" type="submit">Join chat</button>
+        </form>
+    </section>
+    <footer class="h-1/4 pt-16">
+        <p>Copyright &copy; 2021. Open Sourced on Github.</p>
+    </footer>
+
+</body>
+
+</html>

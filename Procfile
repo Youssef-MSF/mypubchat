@@ -1,0 +1,1 @@
+web: gunicorn ensa_chatbot.wsgi
