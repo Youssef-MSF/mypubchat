@@ -15,14 +15,6 @@
         #form-msg {
             margin-left: 12.5%;
         }
-
-
-
-
-
-
-
-
     </style>
 
 </head>
@@ -87,6 +79,8 @@
             + 'public'
             + '/'
         );
+
+        console.log(window.location.host);
 
         chatSocket.onmessage = function(e) {
             const data = JSON.parse(e.data);

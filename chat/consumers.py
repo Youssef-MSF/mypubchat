@@ -3,12 +3,15 @@ import json
 from asgiref.sync import async_to_sync
 from channels.generic.websocket import WebsocketConsumer
 from .models import Message
+import requests
 
 
 class ChatConsumer(WebsocketConsumer):
     def connect(self):
         self.room_name = self.scope['url_route']['kwargs']['room_name']
         self.room_group_name = 'chat_%s' % self.room_name
+
+        print("Room name: ", self.room_name)
 
         # Join room group
         async_to_sync(self.channel_layer.group_add)(
@@ -31,7 +34,7 @@ class ChatConsumer(WebsocketConsumer):
     def receive(self, text_data):
         text_data_json = json.loads(text_data)
         message = text_data_json['message']
-        username = text_data_json['username']
+        image = text_data_json['image']
 
         # Send message to room group
         async_to_sync(self.channel_layer.group_send)(
@@ -39,22 +42,24 @@ class ChatConsumer(WebsocketConsumer):
             {
                 'type': 'chat_message',
                 'message': message,
-                'username': username
+                'image': image
             }
         )
 
         # Save the message in the db
         if message != "":
-            new_message = Message.objects.create(content=message, messenger=username)
-            new_message.save()
+            requests.get(url='http://localhost:8080/LinkedClubs/HandleMessages?image=' + image + "&message=" + message)
 
     # Receive message from room group
     def chat_message(self, event):
         message = event['message']
-        username = event['username']
+        image = event['image']
+
+        print("message: ", message)
+        print("image: ", image)
 
         # Send message to WebSocket
         self.send(text_data=json.dumps({
             'message': message,
-            'username': username
+            'image': image
         }))

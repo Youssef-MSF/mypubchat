@@ -1,1 +1,1 @@
-web: gunicorn ensa_chatbot.wsgi
+web: gunicorn mypubchat.wsgi
